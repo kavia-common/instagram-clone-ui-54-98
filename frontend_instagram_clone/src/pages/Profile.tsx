@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TopNavigation from '../components/TopNavigation';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatePostModal from '../components/CreatePostModal';
+import ProfileHeaderSkeleton from '../components/skeletons/ProfileHeaderSkeleton';
+import ProfileGridSkeleton from '../components/skeletons/ProfileGridSkeleton';
 import { useAuth } from '../contexts/AuthContext';
 import { getMockUserPosts } from '../utils/mockData';
 
@@ -14,8 +16,8 @@ const Profile: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'tagged'>('posts');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  
-  const userPosts = getMockUserPosts();
+  const [isLoading, setIsLoading] = useState(true);
+  const [userPosts, setUserPosts] = useState<any[]>([]);
   
   // Mock profile stats
   const profileStats = {
@@ -23,6 +25,24 @@ const Profile: React.FC = () => {
     followers: 1234,
     following: 567,
   };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Load profile data with simulated delay
+   */
+  useEffect(() => {
+    const loadProfileData = async () => {
+      setIsLoading(true);
+      
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setUserPosts(getMockUserPosts());
+      setIsLoading(false);
+    };
+    
+    loadProfileData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,85 +54,91 @@ const Profile: React.FC = () => {
       
       <div className="max-w-4xl mx-auto pt-8 px-4 pb-20 md:pb-8">
         {/* Profile header */}
-        <div className="bg-white border border-gray-300 rounded-lg p-6 md:p-10 mb-8">
-          <div className="flex flex-col md:flex-row gap-8 md:gap-16">
-            {/* Profile picture */}
-            <div className="flex justify-center md:justify-start">
-              <img
-                src={user?.avatar || 'https://i.pravatar.cc/150?img=12'}
-                alt={user?.username}
-                className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-2 border-gray-300"
-              />
-            </div>
-            
-            {/* Profile info */}
-            <div className="flex-1">
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-6">
-                <h2 className="text-2xl font-light">{user?.username || 'your_username'}</h2>
-                <div className="flex gap-2">
-                  <button className="px-6 py-1.5 bg-gray-200 hover:bg-gray-300 font-semibold text-sm rounded-lg transition">
-                    Edit profile
-                  </button>
-                  <button className="px-6 py-1.5 bg-gray-200 hover:bg-gray-300 font-semibold text-sm rounded-lg transition">
-                    View archive
-                  </button>
-                  <button className="p-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </button>
-                </div>
+        {isLoading ? (
+          <ProfileHeaderSkeleton />
+        ) : (
+          <div className="bg-white border border-gray-300 rounded-lg p-6 md:p-10 mb-8">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-16">
+              {/* Profile picture */}
+              <div className="flex justify-center md:justify-start">
+                <img
+                  src={user?.avatar || 'https://i.pravatar.cc/150?img=12'}
+                  alt={user?.username}
+                  className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-2 border-gray-300"
+                />
               </div>
               
-              {/* Stats */}
-              <div className="flex justify-around md:justify-start md:gap-10 mb-6">
-                <div className="text-center md:text-left">
-                  <span className="font-semibold">{profileStats.posts}</span>
-                  <span className="text-gray-600 ml-1">posts</span>
-                </div>
-                <div className="text-center md:text-left cursor-pointer hover:text-gray-600">
-                  <span className="font-semibold">{profileStats.followers}</span>
-                  <span className="text-gray-600 ml-1">followers</span>
-                </div>
-                <div className="text-center md:text-left cursor-pointer hover:text-gray-600">
-                  <span className="font-semibold">{profileStats.following}</span>
-                  <span className="text-gray-600 ml-1">following</span>
-                </div>
-              </div>
-              
-              {/* Bio */}
-              <div className="text-center md:text-left">
-                <p className="font-semibold">{user?.fullName || 'Your Name'}</p>
-                <p className="text-sm mt-1">
-                  📸 Photography enthusiast<br />
-                  🌍 Exploring the world<br />
-                  ☕ Coffee lover
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Stories highlights section */}
-        <div className="bg-white border border-gray-300 rounded-lg p-6 mb-8">
-          <div className="flex gap-6 overflow-x-auto scrollbar-hide">
-            {['Travel', 'Food', 'Nature', 'Friends'].map((highlight, index) => (
-              <div key={index} className="flex flex-col items-center flex-shrink-0 cursor-pointer">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5">
-                  <div className="bg-white p-0.5 rounded-full w-full h-full">
-                    <div className="bg-gray-200 rounded-full w-full h-full flex items-center justify-center">
-                      <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              {/* Profile info */}
+              <div className="flex-1">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-6">
+                  <h2 className="text-2xl font-light">{user?.username || 'your_username'}</h2>
+                  <div className="flex gap-2">
+                    <button className="px-6 py-1.5 bg-gray-200 hover:bg-gray-300 font-semibold text-sm rounded-lg transition">
+                      Edit profile
+                    </button>
+                    <button className="px-6 py-1.5 bg-gray-200 hover:bg-gray-300 font-semibold text-sm rounded-lg transition">
+                      View archive
+                    </button>
+                    <button className="p-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                    </div>
+                    </button>
                   </div>
                 </div>
-                <span className="text-xs mt-2">{highlight}</span>
+                
+                {/* Stats */}
+                <div className="flex justify-around md:justify-start md:gap-10 mb-6">
+                  <div className="text-center md:text-left">
+                    <span className="font-semibold">{profileStats.posts}</span>
+                    <span className="text-gray-600 ml-1">posts</span>
+                  </div>
+                  <div className="text-center md:text-left cursor-pointer hover:text-gray-600">
+                    <span className="font-semibold">{profileStats.followers}</span>
+                    <span className="text-gray-600 ml-1">followers</span>
+                  </div>
+                  <div className="text-center md:text-left cursor-pointer hover:text-gray-600">
+                    <span className="font-semibold">{profileStats.following}</span>
+                    <span className="text-gray-600 ml-1">following</span>
+                  </div>
+                </div>
+                
+                {/* Bio */}
+                <div className="text-center md:text-left">
+                  <p className="font-semibold">{user?.fullName || 'Your Name'}</p>
+                  <p className="text-sm mt-1">
+                    📸 Photography enthusiast<br />
+                    🌍 Exploring the world<br />
+                    ☕ Coffee lover
+                  </p>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
+        )}
+        
+        {/* Stories highlights section - only show when not loading */}
+        {!isLoading && (
+          <div className="bg-white border border-gray-300 rounded-lg p-6 mb-8">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide">
+              {['Travel', 'Food', 'Nature', 'Friends'].map((highlight, index) => (
+                <div key={index} className="flex flex-col items-center flex-shrink-0 cursor-pointer">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5">
+                    <div className="bg-white p-0.5 rounded-full w-full h-full">
+                      <div className="bg-gray-200 rounded-full w-full h-full flex items-center justify-center">
+                        <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-xs mt-2">{highlight}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* Tabs */}
         <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
@@ -163,36 +189,42 @@ const Profile: React.FC = () => {
           
           {/* Posts grid */}
           {activeTab === 'posts' && (
-            <div className="grid grid-cols-3 gap-1">
-              {userPosts.map((post) => (
-                <div
-                  key={post.id}
-                  className="relative aspect-square bg-gray-100 cursor-pointer group overflow-hidden"
-                >
-                  <img
-                    src={post.imageUrl}
-                    alt="Post"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex gap-6 text-white">
-                      <div className="flex items-center gap-2">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                        <span className="font-semibold">{post.likes}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <span className="font-semibold">{post.comments.length}</span>
+            <>
+              {isLoading ? (
+                <ProfileGridSkeleton />
+              ) : (
+                <div className="grid grid-cols-3 gap-1">
+                  {userPosts.map((post) => (
+                    <div
+                      key={post.id}
+                      className="relative aspect-square bg-gray-100 cursor-pointer group overflow-hidden"
+                    >
+                      <img
+                        src={post.imageUrl}
+                        alt="Post"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="flex gap-6 text-white">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span className="font-semibold">{post.likes}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <span className="font-semibold">{post.comments.length}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
           
           {/* Saved posts tab content */}

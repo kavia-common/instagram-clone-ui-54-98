@@ -5,6 +5,8 @@ import Post from '../components/Post';
 import Sidebar from '../components/Sidebar';
 import BottomNavigation from '../components/BottomNavigation';
 import CreatePostModal from '../components/CreatePostModal';
+import StoriesSkeleton from '../components/skeletons/StoriesSkeleton';
+import PostSkeleton from '../components/skeletons/PostSkeleton';
 import { getMockStories, getMockPosts, getMockSuggestions, Post as PostType } from '../utils/mockData';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,14 +17,35 @@ import { useAuth } from '../contexts/AuthContext';
  */
 const Home: React.FC = () => {
   const { user } = useAuth();
-  const [posts, setPosts] = useState<PostType[]>(getMockPosts());
+  const [posts, setPosts] = useState<PostType[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const stories = getMockStories();
+  const [stories, setStories] = useState<any[]>([]);
   const suggestions = getMockSuggestions();
   const observerTarget = useRef<HTMLDivElement>(null);
+
+  // PUBLIC_INTERFACE
+  /**
+   * Initial data load effect - simulates loading stories and posts
+   */
+  useEffect(() => {
+    // Simulate initial data loading
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      setStories(getMockStories());
+      setPosts(getMockPosts());
+      setIsInitialLoading(false);
+    };
+    
+    loadInitialData();
+  }, []);
 
   // PUBLIC_INTERFACE
   /**
@@ -184,36 +207,48 @@ const Home: React.FC = () => {
       <div className="max-w-5xl mx-auto flex gap-8 pt-8 px-4 pb-20 md:pb-8">
         {/* Main feed */}
         <div className="flex-1 max-w-[630px]">
-          <Stories stories={stories} />
-          
-          <div className="space-y-0">
-            {posts.map(post => (
-              <Post 
-                key={post.id}
-                post={post}
-                onLike={handleLike}
-                onSave={handleSave}
-                onComment={handleComment}
-              />
-            ))}
-          </div>
+          {/* Show skeleton loaders during initial loading */}
+          {isInitialLoading ? (
+            <>
+              <StoriesSkeleton />
+              <PostSkeleton />
+              <PostSkeleton />
+              <PostSkeleton />
+            </>
+          ) : (
+            <>
+              <Stories stories={stories} />
+              
+              <div className="space-y-0">
+                {posts.map(post => (
+                  <Post 
+                    key={post.id}
+                    post={post}
+                    onLike={handleLike}
+                    onSave={handleSave}
+                    onComment={handleComment}
+                  />
+                ))}
+              </div>
 
-          {/* Loading indicator */}
-          {isLoading && (
-            <div className="flex justify-center items-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
-          )}
+              {/* Loading indicator for infinite scroll */}
+              {isLoading && (
+                <>
+                  <PostSkeleton />
+                </>
+              )}
 
-          {/* Intersection observer target */}
-          <div ref={observerTarget} className="h-10" />
+              {/* Intersection observer target */}
+              <div ref={observerTarget} className="h-10" />
 
-          {/* End of feed message */}
-          {!hasMore && (
-            <div className="text-center py-8">
-              <p className="text-gray-500 text-sm">You're all caught up!</p>
-              <p className="text-gray-400 text-xs mt-1">You've seen all posts from the past few days.</p>
-            </div>
+              {/* End of feed message */}
+              {!hasMore && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 text-sm">You're all caught up!</p>
+                  <p className="text-gray-400 text-xs mt-1">You've seen all posts from the past few days.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
         
