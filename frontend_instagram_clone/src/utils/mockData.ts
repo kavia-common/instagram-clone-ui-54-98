@@ -276,6 +276,77 @@ export const getCurrentUser = (): User => {
 
 // PUBLIC_INTERFACE
 /**
+ * Get mock explore posts for the explore/search page
+ * @returns Array of Post objects for explore grid
+ */
+export const getMockExplorePosts = (): Post[] => {
+  const exploreUsers: User[] = [
+    ...mockUsers,
+    {
+      id: '11',
+      username: 'travel_diaries',
+      fullName: 'Travel Diaries',
+      avatar: 'https://i.pravatar.cc/150?img=11',
+      isVerified: true,
+    },
+    {
+      id: '12',
+      username: 'foodie_paradise',
+      fullName: 'Foodie Paradise',
+      avatar: 'https://i.pravatar.cc/150?img=12',
+    },
+    {
+      id: '13',
+      username: 'nature_shots',
+      fullName: 'Nature Photography',
+      avatar: 'https://i.pravatar.cc/150?img=13',
+      isVerified: true,
+    },
+    {
+      id: '14',
+      username: 'art_gallery',
+      fullName: 'Art Gallery',
+      avatar: 'https://i.pravatar.cc/150?img=14',
+    },
+    {
+      id: '15',
+      username: 'fitness_journey',
+      fullName: 'Fitness Journey',
+      avatar: 'https://i.pravatar.cc/150?img=15',
+    },
+  ];
+
+  const exploreTopics = [
+    'landscape', 'food', 'nature', 'art', 'fitness', 'travel', 'architecture',
+    'sunset', 'beach', 'mountains', 'city', 'coffee', 'portrait', 'street',
+    'minimal', 'vintage', 'ocean', 'forest', 'desert', 'urban'
+  ];
+
+  return Array.from({ length: 30 }, (_, i) => {
+    const user = exploreUsers[i % exploreUsers.length];
+    const topic = exploreTopics[i % exploreTopics.length];
+    
+    return {
+      id: `explore${i + 1}`,
+      user,
+      imageUrl: `https://picsum.photos/seed/explore${i + 1}/600/600`,
+      caption: `Amazing ${topic} photography 📸 #${topic} #photography #instagram`,
+      likes: Math.floor(Math.random() * 5000) + 100,
+      timestamp: `${Math.floor(Math.random() * 7) + 1} days ago`,
+      isLiked: false,
+      isSaved: false,
+      comments: Array.from({ length: Math.floor(Math.random() * 5) }, (_, j) => ({
+        id: `ec${i}-${j}`,
+        user: mockUsers[j % mockUsers.length],
+        text: ['Amazing shot!', 'Love this!', 'Incredible! 😍', 'Beautiful work!'][j % 4],
+        timestamp: `${Math.floor(Math.random() * 24)} hours ago`,
+      })),
+    };
+  });
+};
+
+// PUBLIC_INTERFACE
+/**
  * Get mock posts for the current user's profile
  * @returns Array of Post objects for profile grid
  */
