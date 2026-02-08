@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,6 +15,54 @@ interface TopNavigationProps {
 const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch, onCreatePost }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // PUBLIC_INTERFACE
+  /**
+   * Handle mouse enter on profile area
+   */
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsDropdownOpen(true);
+  };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Handle mouse leave from profile area with delay
+   */
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsDropdownOpen(false);
+    }, 200);
+  };
+
+  // PUBLIC_INTERFACE
+  /**
+   * Close dropdown when clicking outside
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [isDropdownOpen]);
 
   return (
     <nav className="bg-white border-b border-gray-300 sticky top-0 z-50">
@@ -96,7 +144,12 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch, onCreatePost })
           </svg>
           
           {/* Profile / Menu */}
-          <div className="relative group">
+          <div 
+            className="relative"
+            ref={dropdownRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
             <img 
               src={user?.avatar || 'https://i.pravatar.cc/150?img=12'}
               alt="Profile" 
@@ -104,7 +157,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch, onCreatePost })
             />
             
             {/* Dropdown menu */}
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 hidden group-hover:block border border-gray-200">
+            <div className={`absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 border border-gray-200 transition-opacity duration-200 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
               <button 
                 onClick={() => navigate('/profile')}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
