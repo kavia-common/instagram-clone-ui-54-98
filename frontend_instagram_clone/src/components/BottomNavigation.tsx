@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 // PUBLIC_INTERFACE
@@ -8,12 +9,13 @@ import { useAuth } from '../contexts/AuthContext';
  */
 const BottomNavigation: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 z-50">
       <div className="flex items-center justify-around h-12 px-2">
         {/* Home */}
-        <button className="p-2">
+        <button onClick={() => navigate('/home')} className="p-2">
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
             <path d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z"/>
           </svg>
@@ -43,7 +45,7 @@ const BottomNavigation: React.FC = () => {
         </button>
         
         {/* Profile */}
-        <button className="p-2">
+        <button onClick={() => navigate('/profile')} className="p-2">
           <img 
             src={user?.avatar || 'https://i.pravatar.cc/150?img=12'}
             alt="Profile" 

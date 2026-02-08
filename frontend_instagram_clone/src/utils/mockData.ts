@@ -273,3 +273,133 @@ export const getCurrentUser = (): User => {
     avatar: 'https://i.pravatar.cc/150?img=12',
   };
 };
+
+// PUBLIC_INTERFACE
+/**
+ * Get mock posts for the current user's profile
+ * @returns Array of Post objects for profile grid
+ */
+export const getMockUserPosts = (): Post[] => {
+  const currentUser = getCurrentUser();
+  return [
+    {
+      id: 'up1',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost1/600/600',
+      caption: 'Beautiful day out! ☀️',
+      likes: 453,
+      timestamp: '3 days ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [
+        {
+          id: 'uc1',
+          user: mockUsers[0],
+          text: 'Amazing shot!',
+          timestamp: '2 days ago',
+        },
+      ],
+    },
+    {
+      id: 'up2',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost2/600/600',
+      caption: 'Coffee time ☕',
+      likes: 321,
+      timestamp: '5 days ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+    {
+      id: 'up3',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost3/600/600',
+      caption: 'Weekend vibes 🌊',
+      likes: 678,
+      timestamp: '1 week ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [
+        {
+          id: 'uc2',
+          user: mockUsers[1],
+          text: 'Love this!',
+          timestamp: '1 week ago',
+        },
+        {
+          id: 'uc3',
+          user: mockUsers[2],
+          text: 'So beautiful! 😍',
+          timestamp: '6 days ago',
+        },
+      ],
+    },
+    {
+      id: 'up4',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost4/600/600',
+      caption: 'Nature walks 🌲',
+      likes: 892,
+      timestamp: '1 week ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+    {
+      id: 'up5',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost5/600/600',
+      caption: 'City lights at night 🌃',
+      likes: 534,
+      timestamp: '2 weeks ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+    {
+      id: 'up6',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost6/600/600',
+      caption: 'Good food, good mood 🍕',
+      likes: 412,
+      timestamp: '2 weeks ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+    {
+      id: 'up7',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost7/600/600',
+      caption: 'Sunset views 🌅',
+      likes: 765,
+      timestamp: '3 weeks ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+    {
+      id: 'up8',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost8/600/600',
+      caption: 'Adventure awaits! 🏔️',
+      likes: 943,
+      timestamp: '3 weeks ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+    {
+      id: 'up9',
+      user: currentUser,
+      imageUrl: 'https://picsum.photos/seed/userpost9/600/600',
+      caption: 'Making memories 📸',
+      likes: 601,
+      timestamp: '1 month ago',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    },
+  ];
+};
