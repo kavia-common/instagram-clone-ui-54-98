@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Messages from './pages/Messages';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -15,7 +16,7 @@ const RootRedirect: React.FC = () => {
 // PUBLIC_INTERFACE
 /**
  * Main App component with routing and authentication
- * Provides mock auth context and routes for Login and Home pages
+ * Provides mock auth context and routes for Login, Home, and Messages pages
  */
 const App: React.FC = () => {
   return (
@@ -29,6 +30,14 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/messages" 
+            element={
+              <ProtectedRoute>
+                <Messages />
               </ProtectedRoute>
             } 
           />

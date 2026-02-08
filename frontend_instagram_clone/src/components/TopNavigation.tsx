@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface TopNavigationProps {
@@ -12,12 +13,16 @@ interface TopNavigationProps {
  */
 const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch }) => {
   const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-white border-b border-gray-300 sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <h1 className="text-2xl font-['Billaboo,cursive] tracking-wider cursor-pointer">
+        <h1 
+          className="text-2xl font-['Billaboo,cursive] tracking-wider cursor-pointer"
+          onClick={() => navigate('/home')}
+        >
           Instagram
         </h1>
         
@@ -38,6 +43,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch }) => {
             className="w-6 h-6 cursor-pointer hover:scale-110 transition" 
             fill="currentColor" 
             viewBox="0 0 24 24"
+            onClick={() => navigate('/home')}
           >
             <path d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z"/>
           </svg>
@@ -48,6 +54,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch }) => {
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
+            onClick={() => navigate('/messages')}
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
