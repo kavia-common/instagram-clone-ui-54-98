@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import TopNavigation from '../components/TopNavigation';
 import Stories from '../components/Stories';
 import Post from '../components/Post';
@@ -11,14 +11,73 @@ import { useAuth } from '../contexts/AuthContext';
 // PUBLIC_INTERFACE
 /**
  * Home page component displaying the main Instagram feed
- * Contains stories, posts feed, and sidebar with suggestions
+ * Contains stories, posts feed with infinite scroll, and sidebar with suggestions
  */
 const Home: React.FC = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState<PostType[]>(getMockPosts());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
   const stories = getMockStories();
   const suggestions = getMockSuggestions();
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // PUBLIC_INTERFACE
+  /**
+   * Load more posts for infinite scroll
+   * Generates additional mock posts based on the current page
+   */
+  const loadMorePosts = useCallback(() => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    // Simulate API call delay
+    setTimeout(() => {
+      const newPosts = getMockPosts().map((post, index) => ({
+        ...post,
+        id: `p${page}_${index}`,
+        timestamp: `${page} day${page > 1 ? 's' : ''} ago`,
+      }));
+
+      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+      setPage((prevPage) => prevPage + 1);
+      setIsLoading(false);
+
+      // Stop infinite scroll after 5 pages (20 posts total)
+      if (page >= 5) {
+        setHasMore(false);
+      }
+    }, 800);
+  }, [isLoading, hasMore, page]);
+
+  // PUBLIC_INTERFACE
+  /**
+   * Set up Intersection Observer for infinite scroll
+   */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [loadMorePosts, hasMore, isLoading]);
 
   // PUBLIC_INTERFACE
   /**
@@ -138,6 +197,24 @@ const Home: React.FC = () => {
               />
             ))}
           </div>
+
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            </div>
+          )}
+
+          {/* Intersection observer target */}
+          <div ref={observerTarget} className="h-10" />
+
+          {/* End of feed message */}
+          {!hasMore && (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-sm">You're all caught up!</p>
+              <p className="text-gray-400 text-xs mt-1">You've seen all posts from the past few days.</p>
+            </div>
+          )}
         </div>
         
         {/* Sidebar - desktop only */}
