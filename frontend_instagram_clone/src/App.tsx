@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Messages from './pages/Messages';
 import Profile from './pages/Profile';
 import Explore from './pages/Explore';
+import Reels from './pages/Reels';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -56,6 +57,14 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <Explore />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/reels" 
+            element={
+              <ProtectedRoute>
+                <Reels />
               </ProtectedRoute>
             } 
           />
