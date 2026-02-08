@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TopNavigation from '../components/TopNavigation';
 import BottomNavigation from '../components/BottomNavigation';
+import CreatePostModal from '../components/CreatePostModal';
 import { getMockExplorePosts } from '../utils/mockData';
 
 // PUBLIC_INTERFACE
@@ -10,6 +11,7 @@ import { getMockExplorePosts } from '../utils/mockData';
  */
 const Explore: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const explorePosts = getMockExplorePosts();
   
   // Filter posts based on search query
@@ -32,7 +34,11 @@ const Explore: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopNavigation onSearch={handleSearch} />
+      <TopNavigation onSearch={handleSearch} onCreatePost={() => setIsCreateModalOpen(true)} />
+      <CreatePostModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
       
       <div className="max-w-5xl mx-auto pt-6 px-4 pb-20 md:pb-8">
         {/* Mobile search bar */}
@@ -120,7 +126,7 @@ const Explore: React.FC = () => {
         )}
       </div>
       
-      <BottomNavigation />
+      <BottomNavigation onCreatePost={() => setIsCreateModalOpen(true)} />
     </div>
   );
 };

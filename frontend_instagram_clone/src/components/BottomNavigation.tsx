@@ -2,12 +2,16 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+interface BottomNavigationProps {
+  onCreatePost?: () => void;
+}
+
 // PUBLIC_INTERFACE
 /**
  * Bottom navigation bar for mobile devices
  * Contains main navigation icons similar to Instagram mobile app
  */
-const BottomNavigation: React.FC = () => {
+const BottomNavigation: React.FC<BottomNavigationProps> = ({ onCreatePost }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +33,7 @@ const BottomNavigation: React.FC = () => {
         </button>
         
         {/* New post */}
-        <button className="p-2">
+        <button onClick={onCreatePost} className="p-2">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={2}/>
             <line x1="12" y1="8" x2="12" y2="16" strokeWidth={2} strokeLinecap="round"/>

@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface TopNavigationProps {
   onSearch?: (query: string) => void;
+  onCreatePost?: () => void;
 }
 
 // PUBLIC_INTERFACE
@@ -11,7 +12,7 @@ interface TopNavigationProps {
  * Top navigation bar component with Instagram-style layout
  * Contains logo, search bar, and action icons
  */
-const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch }) => {
+const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch, onCreatePost }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
@@ -65,6 +66,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch }) => {
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
+            onClick={onCreatePost}
           >
             <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={2}/>
             <line x1="12" y1="8" x2="12" y2="16" strokeWidth={2} strokeLinecap="round"/>

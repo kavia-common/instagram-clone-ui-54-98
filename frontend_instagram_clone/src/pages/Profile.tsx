@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TopNavigation from '../components/TopNavigation';
 import BottomNavigation from '../components/BottomNavigation';
+import CreatePostModal from '../components/CreatePostModal';
 import { useAuth } from '../contexts/AuthContext';
 import { getMockUserPosts } from '../utils/mockData';
 
@@ -12,6 +13,7 @@ import { getMockUserPosts } from '../utils/mockData';
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'tagged'>('posts');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   const userPosts = getMockUserPosts();
   
@@ -24,7 +26,11 @@ const Profile: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopNavigation />
+      <TopNavigation onCreatePost={() => setIsCreateModalOpen(true)} />
+      <CreatePostModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
       
       <div className="max-w-4xl mx-auto pt-8 px-4 pb-20 md:pb-8">
         {/* Profile header */}
@@ -217,7 +223,7 @@ const Profile: React.FC = () => {
         </div>
       </div>
       
-      <BottomNavigation />
+      <BottomNavigation onCreatePost={() => setIsCreateModalOpen(true)} />
     </div>
   );
 };

@@ -4,7 +4,9 @@ import Stories from '../components/Stories';
 import Post from '../components/Post';
 import Sidebar from '../components/Sidebar';
 import BottomNavigation from '../components/BottomNavigation';
+import CreatePostModal from '../components/CreatePostModal';
 import { getMockStories, getMockPosts, getMockSuggestions, Post as PostType } from '../utils/mockData';
+import { useAuth } from '../contexts/AuthContext';
 
 // PUBLIC_INTERFACE
 /**
@@ -12,7 +14,9 @@ import { getMockStories, getMockPosts, getMockSuggestions, Post as PostType } fr
  * Contains stories, posts feed, and sidebar with suggestions
  */
 const Home: React.FC = () => {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<PostType[]>(getMockPosts());
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const stories = getMockStories();
   const suggestions = getMockSuggestions();
 
@@ -82,9 +86,41 @@ const Home: React.FC = () => {
     );
   };
 
+  // PUBLIC_INTERFACE
+  /**
+   * Handle creating a new post
+   * @param imageUrl - URL of the uploaded image
+   * @param caption - Post caption
+   */
+  const handleCreatePost = (imageUrl: string, caption: string): void => {
+    const newPost: PostType = {
+      id: `p${Date.now()}`,
+      user: {
+        id: user?.id || 'current',
+        username: user?.username || 'your_username',
+        fullName: user?.fullName || 'Your Name',
+        avatar: user?.avatar || 'https://i.pravatar.cc/150?img=12',
+      },
+      imageUrl,
+      caption,
+      likes: 0,
+      timestamp: 'Just now',
+      isLiked: false,
+      isSaved: false,
+      comments: [],
+    };
+
+    setPosts(prevPosts => [newPost, ...prevPosts]);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopNavigation />
+      <TopNavigation onCreatePost={() => setIsCreateModalOpen(true)} />
+      <CreatePostModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreatePost={handleCreatePost}
+      />
       
       <div className="max-w-5xl mx-auto flex gap-8 pt-8 px-4 pb-20 md:pb-8">
         {/* Main feed */}
@@ -109,7 +145,7 @@ const Home: React.FC = () => {
       </div>
       
       {/* Bottom navigation - mobile only */}
-      <BottomNavigation />
+      <BottomNavigation onCreatePost={() => setIsCreateModalOpen(true)} />
     </div>
   );
 };
