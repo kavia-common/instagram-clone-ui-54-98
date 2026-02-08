@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import InstagramLogo from './InstagramLogo';
 
 interface TopNavigationProps {
   onSearch?: (query: string) => void;
@@ -68,12 +69,9 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onSearch, onCreatePost })
     <nav className="bg-white border-b border-gray-300 sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <h1 
-          className="text-2xl font-['Billaboo,cursive] tracking-wider cursor-pointer"
-          onClick={() => navigate('/home')}
-        >
-          Instagram
-        </h1>
+        <div className="cursor-pointer" onClick={() => navigate('/home')}>
+          <InstagramLogo className="text-gray-900 hover:opacity-80 transition-opacity" />
+        </div>
         
         {/* Search bar - hidden on mobile */}
         <div className="hidden md:block flex-1 max-w-xs mx-4">
