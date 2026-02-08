@@ -1,50 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Login from './pages/Login';
+import Home from './pages/Home';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
+
+// Component to handle root redirect based on auth state
+const RootRedirect: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  return <Navigate to={isAuthenticated ? '/home' : '/login'} replace />;
+};
 
 // PUBLIC_INTERFACE
 /**
- * Main App component with theme toggle functionality
- * Provides routing context for the entire application
+ * Main App component with routing and authentication
+ * Provides mock auth context and routes for Login and Home pages
  */
 const App: React.FC = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  /**
-   * Toggle between light and dark theme
-   */
-  const toggleTheme = (): void => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
   return (
     <BrowserRouter>
-      <div className="App">
-        <header className="App-header">
-          <button 
-            className="theme-toggle" 
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-          >
-            {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-          </button>
-          <div className="text-4xl font-bold mb-4">
-            Instagram Clone
-          </div>
-          <p className="text-lg">
-            TypeScript + Tailwind CSS + React Router Setup Complete
-          </p>
-          <p className="mt-4">
-            Current theme: <strong>{theme}</strong>
-          </p>
-        </header>
-      </div>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/home" 
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 };
